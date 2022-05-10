@@ -34,7 +34,7 @@ def test_one(file_path):
     pdf = pdfplumber.open(file_path)
     page = pdf.pages[0]
     word = page.extract_words(y_tolerance=-1)
-
+    # 利用pdfplumber读取数据
     with open("output_csv/" + pdf.metadata['Title'] + ".csv", 'w', newline='') as f:
         row = list(word[0].keys())[0:6]
         row.pop(3)
@@ -52,14 +52,17 @@ def test_one(file_path):
                 write = csv.writer(f)
                 write.writerow(row)
 
+    # 数据格式化
     name, information = dataset("output_csv/" + pdf.metadata['Title'] + ".csv")
 
+    # 使用DBSCN进行聚类
     X = StandardScaler().fit_transform(information)
     db = DBSCAN(eps=0.3,min_samples=3).fit(X)
     # print(name)
     # print(db.labels_)
     # print(db.core_sample_indices_)
 
+    # 将得到的标签写入数据表
     date = pd.read_csv("output_csv/" + pdf.metadata['Title'] + ".csv")
     # print(date)
     # print(db.labels_)
